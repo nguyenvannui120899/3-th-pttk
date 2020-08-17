@@ -139,7 +139,9 @@ a.disabled {
     const url_DoiTacQuangCao = `http://localhost:${port}/DoiTacQuangCao`;
     var urlParams;
     var page = prevPage = nextPage = totalPage = greatestID =  1;
+    var maDoiTac;
     const pageSize = 15;
+    var selectTag_DoiTac = '';
     var CE = 0; // Count_Edit_Button_onClick
     //get URL query
     (window.onpopstate = function () {
@@ -171,16 +173,42 @@ a.disabled {
         page = Number(urlParams.page) || 1;
         prevPage = page - 1;
         nextPage = page + 1;
+
+        //get MaDoiTac 
+        maDoiTac = Number(urlParams.idDT) || 0;
+        
         // get data in page
-        await axios.get(url_HopDongQuangCao + `?_page=${page}&_limit=${pageSize}`).then(function(res){
-            data_HopDongQuangCao = res.data;
-           
-        });
+        // if maDoiTac = 0 : get all
+        // else : query maDoiTac
+        if(maDoiTac==0){
+            await axios.get(url_HopDongQuangCao + `?_page=${page}&_limit=${pageSize}`).then(function(res){
+                data_HopDongQuangCao = res.data;
+            });
+        }
+        else{
+            await axios.get(url_HopDongQuangCao + `?MaDoiTac=${maDoiTac}&_page=${page}&_limit=${pageSize}`).then(function(res){
+                data_HopDongQuangCao = res.data;
+            });
+        }
+        
         
         await axios.get(url_DoiTacQuangCao).then(function(res){
             data_DoiTacQuangCao = res.data;
         });
-       
+        
+            // create select tag
+        selectTag_DoiTac  = '<select class="form-control input " >';
+        for( i of data_DoiTacQuangCao){
+            selectTag_DoiTac += `<option value = '${i.MaDoiTac}'>${i.TenDoiTac}</option>`;
+        }
+        selectTag_DoiTac += '</select>';
+        
+        $('.search-block').append(selectTag_DoiTac);
+        $('.search-block').find("select:first-child").addClass('search-key-select');
+        $('.search-key-select').prepend('<option value = "0">--Tất cả--</option>');   //add Tatca option
+
+        $('.search-key-select').find(`option:nth-child(${Number(maDoiTac)+1})`).prop('selected','selected');    // option selected
+    
         //render data
         var tableNV = document.getElementById('table-body');
         for(i in data_HopDongQuangCao){
@@ -195,6 +223,7 @@ a.disabled {
                     TenDoiTac = "Unknown";
                 }
             }
+            
             let row =   '<tr> '+ `
                             <td>${data_HopDongQuangCao[i].MaHopDong}</td>
                             <td>${TenDoiTac}</td>
@@ -215,19 +244,19 @@ a.disabled {
             $(".prevpage-item").addClass('disabled');
         }
         else{
-            $("#prevpage-link").attr('href',`quanlyhopdong.html?page=${prevPage}`);
-            console.log('pre false');
+            $("#prevpage-link").attr('href',`quanlyhopdong.html?idDT=${maDoiTac}&page=${prevPage}`);
+            //console.log('pre false');
         }
 
         if(nextPage > totalPage){
             $(".nextpage-item").addClass('disabled');
         }
         else{
-            $("#nextpage-link").attr('href',`quanlyhopdong.html?page=${nextPage}`);
+            $("#nextpage-link").attr('href',`quanlyhopdong.html?idDT=${maDoiTac}&page=${nextPage}`);
         }
-
+        
         for (let i = 1; i <= totalPage; i++) {
-            let html = `<li id="item-${i}" class="page-item "><a class="page-link" href="quanlyhopdong.html?page=${i}">${i}</a></li>`;
+            let html = `<li id="item-${i}" class="page-item "><a class="page-link" href="quanlyhopdong.html?idDT=${maDoiTac}&page=${i}">${i}</a></li>`;
             $("#totalpage").append(html);
              //mark active
             if(i == page){
@@ -243,16 +272,7 @@ a.disabled {
             $(this).attr("disabled", "disabled");
             
             var index = $("table tbody tr:last-child").index();
-            var data_DoiTacQC ;
-            await axios.get(url_DoiTacQuangCao).then(function(res){
-                data_DoiTacQC = res.data;
-            });
-            // create select tag
-            var selectTag_DoiTac  = '<select class="form-control input" id="exampleFormControlSelect1">';
-            for( i of data_DoiTacQC){
-                selectTag_DoiTac += `<option value = '${i.MaDoiTac}'>${i.TenDoiTac}</option>`;
-            }
-            selectTag_DoiTac += '</select>';
+            
             var row = '<tr>' +
                 '<td><input  type="text" class="form-control input" name="MaHopDong" id="MaHopDong" readonly="readonly"></td>' +
                 //'<td><input  type="text" class="form-control input" name="TenDoiTac" id="TenDoiTac" placeholder = "Input ID: 1,2 or 3" ></td>' +
@@ -427,9 +447,16 @@ a.disabled {
             }
             
         });
+        $(document).on("click", "#search", function(){
+            var search_key =  $('.search-key-select').val();
+            console.log('search_key :>> ', search_key);
+            console.log('page :>> ', page);
+            window.location.replace(`quanlyhopdong.html?idDT=${search_key}&page=${page}`);
+            
+        });
     });
 
- 
+
 </script>
 </head>
 <body>
@@ -443,6 +470,15 @@ a.disabled {
     <div class="container-fluid">
         <div style="font-size: 38px; font-weight: 500; margin: 50px auto;  text-align: center; "> <span style="display: inline-block;">QUẢN LÝ HỢP ĐỒNG QUẢNG CÁO</span></div>
         <div style="margin-left:125px" ><a href="trangchu.html"><button class="btn btn-lg btn-warning">Quay về</button></a> </div>
+        <div class="row h-100 justify-content-center">
+            <div class = "search-block col-md-4">
+                <!-- select tag: doi tac  -->
+            </div>
+            <div>
+                <button class="btn btn-danger" id="search" >Tìm kiếm </button>
+            </div>
+        </div>
+        
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">

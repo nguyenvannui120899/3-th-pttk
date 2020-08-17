@@ -63,55 +63,46 @@
       "id": 8,
       "MaHopDong": 8,
       "MaDoiTac": "2",
-      "NgayKy": "ád",
+      "NgayKy": "04-08-2020",
       "ViTriDang": "2dsâsd",
-      "ThoiHan": "2dsdádáda",
+      "ThoiHan": "21-08-2020",
       "GiaHopDong": 20000222
     },
     {
       "id": 11,
       "MaHopDong": 11,
       "MaDoiTac": "2",
-      "NgayKy": "ádas",
+      "NgayKy": "17-08-2020",
       "ViTriDang": "ádasd",
-      "ThoiHan": "áda",
+      "ThoiHan": "19-08-2020",
       "GiaHopDong": 2134
     },
     {
       "id": 12,
       "MaHopDong": 12,
       "MaDoiTac": "2",
-      "NgayKy": "qưe",
+      "NgayKy": "02-08-2020",
       "ViTriDang": "12ád2",
-      "ThoiHan": "12ádas",
+      "ThoiHan": "22-08-2020",
       "GiaHopDong": 20002323
     },
     {
       "id": 13,
       "MaHopDong": 13,
       "MaDoiTac": "2",
-      "NgayKy": "qưe",
+      "NgayKy": "10-08-2020",
       "ViTriDang": "ádasd",
-      "ThoiHan": "áda",
+      "ThoiHan": "20-08-2020",
       "GiaHopDong": 2
     },
     {
       "id": 14,
       "MaHopDong": 14,
       "MaDoiTac": "2",
-      "NgayKy": "sadas",
+      "NgayKy": "02-08-2020",
       "ViTriDang": "ádasd",
-      "ThoiHan": "ádasd",
+      "ThoiHan": "29-08-2020",
       "GiaHopDong": 100000
-    },
-    {
-      "id": 15,
-      "MaHopDong": 15,
-      "MaDoiTac": "1",
-      "NgayKy": "áda",
-      "ViTriDang": "d",
-      "ThoiHan": "eqưe",
-      "GiaHopDong": 1333097
     },
     {
       "id": 16,
@@ -166,6 +157,15 @@
       "ViTriDang": "Bot - Banner",
       "ThoiHan": "20-11-2020",
       "GiaHopDong": 1222222222
+    },
+    {
+      "id": 22,
+      "MaHopDong": 22,
+      "MaDoiTac": "1",
+      "NgayKy": "11-08-2020",
+      "ViTriDang": "Bot - Banner",
+      "ThoiHan": "27-08-2020",
+      "GiaHopDong": 2000000
     }
   ]
 }
