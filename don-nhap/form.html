@@ -33,290 +33,51 @@
     <!-- axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <script src="./form.js"></script>
+
     <script>
-      const port = 3003;
-      const url_NhanVien = `http://localhost:${port}/NhanVien`;
-      const url_HopDongQuangCao = `http://localhost:${port}/HopDongQuangCao`;
-      const url_DoiTacQuangCao = `http://localhost:${port}/DoiTacQuangCao`;
-      var urlParams;
-      var page = (prevPage = nextPage = totalPage = greatestID = 1);
-      const pageSize = 20;
-      //get URL query
-      (window.onpopstate = function () {
-        var match,
-          pl = /\+/g, // Regex for replacing addition symbol with a space
-          search = /([^&=]+)=?([^&]*)/g,
-          decode = function (s) {
-            return decodeURIComponent(s.replace(pl, " "));
-          },
-          query = window.location.search.substring(1);
-        urlParams = {};
-        while ((match = search.exec(query)))
-          urlParams[decode(match[1])] = decode(match[2]);
-      })();
       $(document).ready(async function () {
-        var data_NhanVien = [];
-        var data_HopDongQuangCao = [];
-        var data_DoiTacQuangCao = [];
+        console.log("url_MatHang", url_MatHang);
+        console.log("urlParams", urlParams);
+        var data_MatHang = [];
+
         // get all data
-        await axios.get(url_HopDongQuangCao).then(function (res) {
-          data_HopDongQuangCao = res.data;
-        });
-        for (i of data_HopDongQuangCao) {
-          greatestID = greatestID < i.id ? i.id : greatestID;
-        }
-
-        //paginate
-        totalPage = Math.floor(data_HopDongQuangCao.length / pageSize) + 1 || 1;
-        page = Number(urlParams.page) || 1;
-        prevPage = page - 1;
-        nextPage = page + 1;
-        // get data in page
-        await axios
-          .get(url_HopDongQuangCao + `?_page=${page}&_limit=${pageSize}`)
-          .then(function (res) {
-            data_HopDongQuangCao = res.data;
-          });
-
-        await axios.get(url_DoiTacQuangCao).then(function (res) {
-          data_DoiTacQuangCao = res.data;
+        await axios.get(url_MatHang).then((res) => {
+          console.log(res);
+          data_MatHang = res.data;
         });
 
-        //render data
-        var tableNV = document.getElementById("table-body");
-        for (i in data_HopDongQuangCao) {
-          // lay ten doi tac
-          let TenDoiTac = "";
-          for (j in data_DoiTacQuangCao) {
-            if (
-              data_DoiTacQuangCao[j].MaDoiTac ==
-              data_HopDongQuangCao[i].MaDoiTac
-            ) {
-              TenDoiTac = data_DoiTacQuangCao[j].TenDoiTac;
-              break;
-            } else {
-              TenDoiTac = "Unknown";
-            }
-          }
-          let row =
-            "<tr> " +
-            `
-                            <td>${data_HopDongQuangCao[i].MaHopDong}</td>
-                            <td>${TenDoiTac}</td>
-                            <td>${data_HopDongQuangCao[i].NgayKy}</td>
-                            <td>${data_HopDongQuangCao[i].ViTriDang}</td>
-                            <td>${data_HopDongQuangCao[i].ThoiHan}</td>
-                            <td>${data_HopDongQuangCao[i].GiaHopDong}</td>
-                            <td>
-                                <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                            </td>
-                        </tr>`;
-          $("tbody").append(row);
-        }
-        //pagination bar
-        if (prevPage < 1) {
-          $(".prevpage-item").addClass("disabled");
-        } else {
-          $("#prevpage-link").attr(
-            "href",
-            `quanlyhopdong.html?page=${prevPage}`
-          );
-          console.log("pre false");
-        }
-
-        if (nextPage > totalPage) {
-          $(".nextpage-item").addClass("disabled");
-        } else {
-          $("#nextpage-link").attr(
-            "href",
-            `quanlyhopdong.html?page=${nextPage}`
-          );
-        }
-
-        for (let i = 1; i <= totalPage; i++) {
-          let html = `<li id="item-${i}" class="page-item "><a class="page-link" href="quanlyhopdong.html?page=${i}">${i}</a></li>`;
-          $("#totalpage").append(html);
-          //mark active
-          if (i == page) {
-            $(`#item-${i}`).addClass("active");
-          }
-        }
-        //
-        $('[data-toggle="tooltip"]').tooltip();
-        var actions = $("table td:last-child").html();
-        // Append table with add row form on add new button click
-
-        $(".add-new").click(async function () {
-          $(this).attr("disabled", "disabled");
-          var index = $("table tbody tr:last-child").index();
-          var data_DoiTacQC;
-          await axios.get(url_DoiTacQuangCao).then(function (res) {
-            data_DoiTacQC = res.data;
-          });
-          // create select tag
-          var selectTag_DoiTac =
-            '<select class="form-control input" id="exampleFormControlSelect1">';
-          for (i of data_DoiTacQC) {
-            selectTag_DoiTac += `<option value = '${i.MaDoiTac}'>${i.TenDoiTac}</option>`;
-          }
-          selectTag_DoiTac += "</select>";
-
-          var row =
-            "<tr>" +
-            '<td><input  type="text" class="form-control input" name="MaHopDong" id="MaHopDong" readonly="readonly"></td>' +
-            //'<td><input  type="text" class="form-control input" name="TenDoiTac" id="TenDoiTac" placeholder = "Input ID: 1,2 or 3" ></td>' +
-            "<td>" +
-            selectTag_DoiTac +
-            "</td>" +
-            '<td><input  type="text" class="form-control input" name="NgayKy" id="NgayKy"></td>' +
-            '<td><input  type="text" class="form-control input" name="ViTriDang" id="ViTriDang"></td>' +
-            '<td><input  type="text" class="form-control input" name="ThoiHan" id="ThoiHan"></td>' +
-            '<td><input  type="text" class="form-control input" name="GiaTri" id="GiaTri"></td>' +
-            "<td>" +
-            actions +
-            "</td>" +
-            "</tr>";
-          $("table").append(row);
-          $("table tbody tr")
-            .eq(index + 1)
-            .find(".add, .edit")
-            .toggle();
-          $('[data-toggle="tooltip"]').tooltip();
-        });
-        // Add row on add button click
-        $(document).on("click", ".add", function () {
-          var empty = false;
-          // var input = $(this).parents("tr").find('input[type="text"]');
-          var input = $(this).parents("tr").find(".input");
-
-          //return;
-          let i = 0;
-          input.each(function () {
-            if (!$(this).val() && i != 0) {
-              //~
-              $(this).addClass("error");
-              empty = true;
-            } else {
-              $(this).removeClass("error");
-            }
-            i++;
-          });
-          $(this).parents("tr").find(".error").first().focus();
-          if (!empty) {
-            let i = 0;
-            input.each(function () {
-              if (i == 0) {
-                if (!input[0].value) {
-                  $(this)
-                    .parent("td")
-                    .html(greatestID + 1);
-                } else {
-                  $(this).parent("td").html($(this).val());
-                }
-              }
-              $(this).parent("td").html($(this).val());
-              i++;
-            });
-            $(this).parents("tr").find(".add, .edit").toggle();
-            $(".add-new").removeAttr("disabled");
-
-            //check: add or edit
-
-            const MaDoiTac = input[1].value;
-            const NgayKy = input[2].value;
-            const ViTriDang = input[3].value;
-            const ThoiHan = input[4].value;
-            const GiaTri = input[5].value;
-
-            if (!input[0].value) {
-              console.log("add");
-              // ADD
-              axios({
-                method: "POST",
-                url: `http://localhost:${port}/HopDongQuangCao/`,
-                data: {
-                  id: greatestID + 1,
-                  MaHopDong: greatestID + 1,
-                  MaDoiTac: MaDoiTac,
-                  NgayKy: NgayKy,
-                  ViTriDang: ViTriDang,
-                  ThoiHan: ThoiHan,
-                  GiaHopDong: Number(GiaTri),
-                },
-              });
-              greatestID++;
-            } else {
-              console.log("update");
-              // UPDATE
-              axios({
-                method: "PATCH",
-                url: `http://localhost:${port}/HopDongQuangCao/${input[0].value}`,
-                data: {
-                  // MaDoiTac: MaDoiTac,
-                  ViTriDang: ViTriDang,
-                  ThoiHan: ThoiHan,
-                  GiaHopDong: Number(GiaTri),
-                },
-              });
-            }
-          }
-        });
-        // Edit row on edit button click
-        $(document).on("click", ".edit", function () {
-          $(this)
-            .parents("tr")
-            .find("td:first-child")
-            .each(function () {
-              $(this).html(
-                '<input type="text" class="form-control input" value="' +
-                  $(this).text() +
-                  '" readonly="readonly">'
-              );
-            });
-          $(this)
-            .parents("tr")
-            .find("td:nth-child(2)")
-            .each(function () {
-              $(this).html(
-                '<input type="text" class="form-control input" value="' +
-                  $(this).text() +
-                  '" readonly="readonly">'
-              );
-            });
-          $(this)
-            .parents("tr")
-            .find("td:not(:last-child):not(:first-child):not(:nth-child(2))")
-            .each(function () {
-              $(this).html(
-                '<input type="text" class="form-control input" value="' +
-                  $(this).text() +
-                  '">'
-              );
-            });
-          $(this).parents("tr").find(".add, .edit").toggle();
-          $(".add-new").attr("disabled", "disabled");
-        });
-        // Delete row on delete button click
-        $(document).on("click", ".delete", function () {
-          var id = $(this).parents("tr").find("td:first-child");
-          if (window.confirm(`Delete this record? (ID=${id[0].innerText})`)) {
-            //DELETE
-            axios({
-              method: "DELETE",
-              url: `http://localhost:${port}/HopDongQuangCao/${id[0].innerText}`,
-            })
-              .then(() => {
-                $(this).parents("tr").remove();
-                $(".add-new").removeAttr("disabled");
-                alert(`The record has been deleted! (ID=${id[0].innerText})`);
-              })
-              .catch((error) => {
-                alert("Failed! " + error);
-              });
-          }
-        });
+        // if (!input[0].value) {
+        //   console.log("add");
+        //   // ADD
+        //   axios({
+        //     method: "POST",
+        //     url: `http://localhost:${port}/HopDongQuangCao/`,
+        //     data: {
+        //       id: greatestID + 1,
+        //       MaHopDong: greatestID + 1,
+        //       MaDoiTac: MaDoiTac,
+        //       NgayKy: NgayKy,
+        //       ViTriDang: ViTriDang,
+        //       ThoiHan: ThoiHan,
+        //       GiaHopDong: Number(GiaTri),
+        //     },
+        //   });
+        //   greatestID++;
+        // } else {
+        //   console.log("update");
+        //   // UPDATE
+        //   axios({
+        //     method: "PATCH",
+        //     url: `http://localhost:${port}/HopDongQuangCao/${input[0].value}`,
+        //     data: {
+        //       // MaDoiTac: MaDoiTac,
+        //       ViTriDang: ViTriDang,
+        //       ThoiHan: ThoiHan,
+        //       GiaHopDong: Number(GiaTri),
+        //     },
+        //   });
+        // }
       });
     </script>
   </head>

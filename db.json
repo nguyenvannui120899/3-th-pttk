@@ -229,5 +229,34 @@
       "ThoiHan": "20/11/2020",
       "GiaHopDong": 123212
     }
+  ],
+  "DonNhapHang": [
+    {
+      "Id": 1,
+      "MaNV": 1,
+      "NgayLap": "16/8/2020",
+      "TongSoLuongNhap": 10,
+      "LiDoNhap": "ly do nhap",
+      "MaNCC": 1
+    }
+  ],
+  "MatHang": [
+    {
+      "Id": 1,
+      "Ten": "Mặt hàng 1",
+      "SoLuongToiDa": 100,
+      "SoLuongConLai": 10,
+      "Gia": 50000
+    }
+  ],
+  "ChungLoai": [
+    {
+      "Id": 1,
+      "Ten": "Loại 1"
+    },
+    {
+      "Id": 2,
+      "Ten": "Loại 2"
+    }
   ]
 }
